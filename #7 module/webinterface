@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings FATAL => 'all';
+use Uprofiles::db::Uprofiles;
+require Abills::Templates;
+our ($db, $admin, $html);
+our Uprofiles $Uprofiles = Uprofiles->new($db, $admin, \%conf);
+#**********************************************************
+
+=head2 uprofiles_main - show users profiles
+    
+=cut
+
+#**********************************************************
+sub uprofiles_main {
+  my $stm = $Uprofiles->get_users();
+  my $inner_tpl;
+
+  # add data to template from $stm
+  foreach my $line (@$stm) {
+    $inner_tpl .= $html->tpl_show(_include('uprofiles_user_form', 'Uprofiles'), 
+      {
+        USER_NAME => ($line->{user_name}),
+        USER_ADDRESS => ($line->{user_address}),
+        USER_EMAIL => ($line->{user_email})
+      });
+
+    # print html
+    print $html->tpl_show(_include('uprofiles_main', 'Uprofiles'), { CONTENT => $inner_tpl });
+  }
+}
+
+1;
+
